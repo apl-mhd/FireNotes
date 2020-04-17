@@ -21,7 +21,7 @@ public class NoteDetails extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -33,16 +33,15 @@ public class NoteDetails extends AppCompatActivity {
         });
     }
 
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
 
         if (item.getItemId() == android.R.id.home){
 
 
-            onBackPressed();
+            onBackPressed(); 
         }
-
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
     }
 }

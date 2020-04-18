@@ -8,4 +8,17 @@
     tools:context=".NoteDetails"
     tools:showIn="@layout/activity_note_details">
 
+    <TextView
+        android:id="@+id/noteDetailsContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="18sp"
+        android:background="@color/yellow"
+        android:scrollbars="vertical"
+        android:isScrollContainer="true"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

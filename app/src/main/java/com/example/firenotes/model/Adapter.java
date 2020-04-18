@@ -43,19 +43,26 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
         holder.noteTitle.setText(titles.get(position));
         holder.noteContent.setText(content.get(position));
 
-        holder.mCardView.setCardBackgroundColor(holder.view.getResources().getColor(getRandomColor()));
+
+        final int code =getRandomColor();
+        holder.mCardView.setCardBackgroundColor(holder.view.getResources().getColor(code));
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Intent i = new Intent(view.getContext(), NoteDetails.class);
+
+                i.putExtra("title", titles.get(position));
+                i.putExtra("content", content.get(position));
+                i.putExtra("code",code);
                 view.getContext().startActivity(i);
+
 
             }
         });
@@ -77,7 +84,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         colorCode.add(R.color.red);
         colorCode.add(R.color.greenlight);
         colorCode.add(R.color.notGreen);
-
 
         Random randomColor = new Random();
 

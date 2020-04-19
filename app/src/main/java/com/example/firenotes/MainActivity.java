@@ -2,15 +2,20 @@ package com.example.firenotes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.firenotes.auth.Register;
 import com.example.firenotes.model.Adapter;
 import com.example.firenotes.model.Note;
 import com.example.firenotes.note.AddNote;
@@ -32,6 +39,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -47,9 +56,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView nav_view;
     RecyclerView noteList;
     Adapter adapter;
-
-    FirebaseFirestore fstore;
     FirestoreRecyclerAdapter<Note, NoteViewHolder> noteAdapter;
+    FirebaseFirestore fstore;
+    FirebaseUser user;
+    FirebaseAuth fAuth;
+
+
 
 
 
@@ -61,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         fstore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        user = fAuth.getCurrentUser();
+
 
         Query query = fstore.collection("notes").orderBy("title", Query.Direction.DESCENDING);
         FirestoreRecyclerOptions <Note> allnotes = new FirestoreRecyclerOptions.Builder<Note>().setQuery(query, Note.class).build();
@@ -197,9 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-
-
-
+        drawerLayout.closeDrawer(GravityCompat.START);
 
         Log.i("click", String.valueOf(item.getItemId()));
         Toast.makeText(this, "Orko", Toast.LENGTH_SHORT).show();
@@ -212,12 +225,65 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(new Intent(this, AddNote.class));
                 break;
 
+            case R.id.logout:
+                checkUser();
+                break;
+
             default:
 
                 Toast.makeText(this , "Coming soon", Toast.LENGTH_LONG).show();
         }
 
         return false;
+    }
+
+    private void checkUser() { //if user anonymous or not
+
+
+        if (user.isAnonymous()){
+
+            displayAlert();
+        }
+        else {
+
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(getApplicationContext(), Splash.class));
+                finish();
+        }
+    }
+
+    private void displayAlert() {
+
+        AlertDialog.Builder warning = new AlertDialog.Builder(this)
+                .setTitle("Are yoy sure?")
+                .setMessage("You are logged in with temporary Account. Logging out will delete all notes")
+                .setPositiveButton("Sync Note", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        startActivity(new Intent(getApplicationContext(), Register.class));
+                        finish();
+
+                    }
+                }).setNegativeButton("Logout", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        //delete all dataa
+
+
+                        user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                                startActivity(new Intent(getApplicationContext(), Splash.class));
+                                finish();
+                            }
+                        });
+                    }
+                });
+
+        warning.show();
     }
 
     @Override

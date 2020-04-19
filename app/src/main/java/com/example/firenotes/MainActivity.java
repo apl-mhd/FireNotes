@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         user = fAuth.getCurrentUser();
 
 
-        Query query = fstore.collection("notes").orderBy("title", Query.Direction.DESCENDING);
+        Query query = fstore.collection("notes").document(user.getUid()).collection("myNotes").orderBy("title", Query.Direction.DESCENDING);
         FirestoreRecyclerOptions <Note> allnotes = new FirestoreRecyclerOptions.Builder<Note>().setQuery(query, Note.class).build();
 
         noteAdapter = new FirestoreRecyclerAdapter<Note, NoteViewHolder>(allnotes) {
@@ -223,6 +223,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.addNote:
 
                 startActivity(new Intent(this, AddNote.class));
+                break;
+
+            case R.id.sync:
+
+                if (user.isAnonymous()){
+
+                    startActivity(new Intent(this, Register.class));
+                }
+                else {
+
+                    Toast.makeText(this, "You are connected", Toast.LENGTH_SHORT).show();
+                }
+
+
                 break;
 
             case R.id.logout:

@@ -26,9 +26,6 @@ public class Splash extends AppCompatActivity {
 
 
         fAuth = FirebaseAuth.getInstance();
-
-
-
         Handler handler = new Handler();
 
         handler.postDelayed(new Runnable() {
@@ -40,6 +37,7 @@ public class Splash extends AppCompatActivity {
 
 
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
 
                 }
                 else {

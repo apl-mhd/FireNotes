@@ -16,8 +16,6 @@ import com.example.firenotes.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -31,7 +29,6 @@ public class EditNote extends AppCompatActivity {
     EditText editNoteTitle, editNoteContent;
     FirebaseFirestore fstore;
     ProgressBar spinner;
-    FirebaseUser user;
 
 
 
@@ -44,7 +41,6 @@ public class EditNote extends AppCompatActivity {
         setSupportActionBar(toolbar);
         fstore = fstore.getInstance();
         spinner = findViewById(R.id.progressBar2);
-        user = FirebaseAuth.getInstance().getCurrentUser();
 
 
 
@@ -80,9 +76,7 @@ public class EditNote extends AppCompatActivity {
                 spinner.setVisibility(View.VISIBLE);
 
 
-                DocumentReference docref = fstore.collection("notes").document(user.getUid()).collection("myNotes").document(data.getStringExtra("noteId"));
-
-
+                DocumentReference docref = fstore.collection("notes").document(data.getStringExtra("noteId"));
                 Map<String, Object> note = new HashMap<>();
                 note.put("title", nTitle);
                 note.put("content", nContent);

@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.firenotes.NoteDetails;
+import com.example.firenotes.note.NoteDetails;
 import com.example.firenotes.R;
 
 import java.util.ArrayList;

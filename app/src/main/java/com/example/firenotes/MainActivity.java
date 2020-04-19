@@ -17,14 +17,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.firenotes.model.Adapter;
 import com.example.firenotes.model.Note;
+import com.example.firenotes.note.AddNote;
+import com.example.firenotes.note.EditNote;
+import com.example.firenotes.note.NoteDetails;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
@@ -59,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         noteAdapter = new FirestoreRecyclerAdapter<Note, NoteViewHolder>(allnotes) {
             @Override
-            protected void onBindViewHolder(@NonNull NoteViewHolder holder, int position, @NonNull final Note model) {
+            protected void onBindViewHolder(@NonNull NoteViewHolder holder, final int position, @NonNull final Note model) {
 
 
                 holder.noteTitle.setText(model.getTitle());
@@ -68,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 final int code =getRandomColor();
                 holder.mCardView.setCardBackgroundColor(holder.view.getResources().getColor(code));
+
+                final String docId = noteAdapter.getSnapshots().getSnapshot(position).getId();
 
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -78,7 +88,64 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         i.putExtra("title", model.getTitle());
                         i.putExtra("content", model.getContent());
                         i.putExtra("code",code);
+                        i.putExtra("noteId", docId);
                         view.getContext().startActivity(i);
+
+
+                    }
+                });
+
+
+                ImageView menIcon = holder.view.findViewById(R.id.menuIcon);
+
+                menIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View view) {
+
+                        final  String docId = noteAdapter.getSnapshots().getSnapshot(position).getId();
+
+
+
+                        PopupMenu menu = new PopupMenu(view.getContext(), view);
+                        //menu.setGravity(Gravity.END);
+                        menu.getMenu().add("Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+
+
+                                Intent i = new Intent(view.getContext(), EditNote.class);
+                                i.putExtra("title", model.getTitle());
+                                i.putExtra("content", model.getContent());
+                                i.putExtra("noteId", docId);
+                                startActivity(i);
+                                return false;
+                            }
+                        });
+
+                        menu.getMenu().add("Delete").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+
+
+                                DocumentReference docref = fstore.collection("notes").document(docId);
+                                docref.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        //delete success
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                        Toast.makeText(MainActivity.this, "Error in deleting note", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                return false;
+                            }
+                        });
+
+                        menu.show();
 
 
                     }

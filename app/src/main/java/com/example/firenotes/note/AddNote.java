@@ -1,11 +1,11 @@
-package com.example.firenotes;
+package com.example.firenotes.note;
 
 import android.os.Bundle;
 
+import com.example.firenotes.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class AddNote extends AppCompatActivity {
 
